@@ -1,4 +1,10 @@
 RocketChat.Livechat = {
+	logger: new Logger('Livechat', {
+		sections: {
+			webhook: 'Webhook'
+		}
+	}),
+
 	getNextAgent(department) {
 		if (department) {
 			return RocketChat.models.LivechatDepartmentAgents.getNextAgentForDepartment(department);
@@ -193,6 +199,10 @@ RocketChat.Livechat = {
 
 		RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, user._id);
 
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('closeLivechat', room);
+		});
+
 		return true;
 	},
 
@@ -206,7 +216,11 @@ RocketChat.Livechat = {
 			'Livechat_registration_form',
 			'Livechat_offline_title',
 			'Livechat_offline_title_color',
-			'Livechat_offline_message'
+			'Livechat_offline_message',
+			'Livechat_offline_success_message',
+			'Livechat_offline_form_unavailable',
+			'Livechat_display_offline_form',
+			'Language'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
